@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include "Server.h"
+#include "mysocket.h"
 
 using namespace std;
 
@@ -25,7 +26,7 @@ ChatServer::ChatServer(int port, char* chatName){
 }
 
 void ChatServer::createConnection(int portNum){
-    srvfd = listenFor(portNum);
+    srvfd = makeListener(portNum);
 }
 
 bool ChatServer::sendC(){
@@ -53,7 +54,7 @@ bool ChatServer::recieveC(){
 }
 
 bool ChatServer::sendMessage(char * message){
-    if (strcmp(message, "Winter is coming")==0){
+    if (strcmp(message, "yield")==0){
         stillChatting = false;
     }
 
@@ -64,9 +65,10 @@ bool ChatServer::sendMessage(char * message){
     }
     
     for (int i = 0; i<strlen(message); i++){
-        long character = coder->endecrypt((long)message[i], clientKey, clientC);
-        bytesWritten = write(connfd, &character, sizeof(long));
-        if (bytesWritten < sizeof(long)){
+//        long character = coder->endecrypt((long)message[i], clientKey, clientC);
+        char character = message[i];
+        bytesWritten = write(connfd, &character, sizeof(char));
+        if (bytesWritten < sizeof(char)){
             return false;
         }
     }
@@ -83,17 +85,18 @@ bool ChatServer::readMessage(){
     
     char message[length + 1];
     for (int i = 0; i<length; i++) {
-        long character = read(connfd, &character, sizeof(long));
-        if (character < sizeof(long)){
+        char character;
+        int n  = read(connfd, &character, sizeof(char));
+        if (n < sizeof(char)){
             return false;
         }
-        character = coder->endecrypt(character, coder->getPrivateKey(), coder->getC());
-        message[i] = (char)character;
+//        character = coder->endecrypt(character, coder->getPrivateKey(), coder->getC());
+        message[i] = character;
     }
     message[length] = '\0';
-    if (strcmp(message, "Winter is coming")==0){
+    if (strcmp(message, "yield")==0){
         stillChatting = false;
-        sendMessage(message);
+        sendMessage("yield");
         
     }
     cout<<message<<endl;

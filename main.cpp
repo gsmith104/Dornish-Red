@@ -7,6 +7,7 @@
 //
 
 #include <iostream>
+#include <stdio.h>
 #include "RSA.h"
 #include "Server.h"
 #include <string.h>
@@ -15,14 +16,12 @@ using namespace std;
 
 void *readit (void* arg) {
     ChatServer *server = (ChatServer *)arg;
-    char* message;
+    char message[128];
     while (server->getStillChatting()){
-        cin>>message;
+        cin.getline(message,128);
         server->sendMessage(server->getChatHandle());
         server->sendMessage(message);
-    }
-    
-    
+    }   
 }
 
 void *writeit (void *arg) {
@@ -37,8 +36,9 @@ int main (int argc, const char * argv[])
 {
     //Write function to validate input
 
-    char * handle;
-    strcpy(handle, argv[2]);    
+    char handle[20];
+    strcpy(handle, argv[2]); 
+    cout<<handle<<endl;
     ChatServer *server = new ChatServer(atoi(argv[1]), handle);
     if (server->recievePublicKey() && server->recieveC()){
         server->sendPublicKey();

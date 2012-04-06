@@ -8,7 +8,6 @@
 
 #ifndef Dornish_Red_Server_h
 #define Dornish_Red_Server_h
-#include "mysocket.h"
 #include "RSA.h"
 
 class ChatServer{
@@ -35,6 +34,7 @@ public:
     bool closeConnection();
     bool getStillChatting();
     char* getChatHandle();
+
 };
 
 
