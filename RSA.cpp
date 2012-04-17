@@ -25,13 +25,17 @@ RSA::~RSA(){
     
 }
 
+long RSA::getM(){
+    return m;
+}
+
 /**
  * Finds a coprime number to the given parameter x
  */
 long RSA::coprime(long x){
     long random;
     while (true){
-        random = abs(rand()% 1000);
+        random = abs(rand()% 30);
         if (gcd(random, x) == 1){
             return random;
         }
@@ -87,8 +91,8 @@ long RSA::generatePrime(){
 /**
  * Reads in a block of longs and encrypts the number with the public key, or decrypts with the private key
  */
-long RSA::endecrypt(long message, long key, long c){
-    long conversion = modulo(message, key, c);
+int RSA::endecrypt(long message, long key, long c){
+    int conversion = modulo(message, key, c);
     return conversion;
     
 }
@@ -106,8 +110,32 @@ long RSA::modInverse(long base, long m){
  * Calculates modulo of the exponent (in a really crappy manner)
  */
 long RSA::modulo(long a, long b, long c){
-    long temp = pow(a,b);
-    return temp % c;
+    
+    int length = toBase2(b) + 1;
+    
+    //get mod values of a to the power of 2
+    long modValues[length];
+    long tempBase = a % c;
+    modValues[0] = tempBase;
+    for (int i = 1; i < length; i++) {
+        modValues[i] = (tempBase * tempBase) % c;
+        tempBase = modValues[i];
+    }
+    
+    //multiply modValues together that are relevant
+    long total = 1;
+    if (length == 0){
+        return 1;
+    }
+    else {
+        for (int i = 0; i < length; i++){
+            if(baseTwo[i] == 1){
+                total = (total * modValues[i]) % c;
+            }
+        }
+        return total;    
+    }
+
 }
 
 /**
@@ -116,12 +144,10 @@ long RSA::modulo(long a, long b, long c){
 long RSA::totient(long n){
     long totient = n;
     long limit = n/2;
-//    cout<<"This is the limit: "<<limit<<endl;
     for (long i = 2; i<limit; i++){
         if (isPrime(i)){
             if (n % i == 0){
                 totient *= (1 - 1.0/i);
-//                cout<<totient<<endl;
             }
         }
     }
@@ -146,6 +172,28 @@ bool RSA::isPrime(long n){
     }
     return true;
 }
+
+long RSA::getPrivateKey(){
+    return privateKey;
+}
+
+/**
+ *
+ */
+int RSA::toBase2(long n){
+    int i = 0;
+    while (n/2>0) {
+        baseTwo[i] = n%2;
+        i++;
+        n = n/2;
+        if (n == 1){
+            baseTwo[i] = 1;
+        }
+    }
+    return i;
+}
+
+
 
 
 

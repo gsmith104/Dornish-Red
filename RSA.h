@@ -13,6 +13,7 @@ class RSA{
 private:
     long c, m;
     long publicKey, privateKey;
+    long baseTwo[64];
     
 public:
     RSA();
@@ -20,13 +21,16 @@ public:
     long coprime(long x);
     long getPublicKey();
     long getC();
+    long getM();
+    long getPrivateKey();
     long gcd(long a, long b);
-    long endecrypt(long message, long key, long c);
+    int endecrypt(long message, long key, long c);
     long modInverse(long base, long m);
     long modulo(long a, long b, long c);
     long totient(long n);
     long generatePrime();
     bool isPrime(long n);
+    int toBase2(long n);
 };
 
 
