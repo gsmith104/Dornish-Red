@@ -9,12 +9,17 @@
 #include <iostream>
 #include "RSA.h"
 #include <math.h>
+#include <stdlib.h>
 using namespace std;
 
 
 RSA::RSA(){
+    srand(time(0));
     long a = generatePrime();
     long b = generatePrime();
+    while (a==b){
+        b = generatePrime();
+    }
     c = a * b;
     m = (a-1)*(b-1);
     publicKey = coprime(m);
@@ -35,8 +40,8 @@ long RSA::getM(){
 long RSA::coprime(long x){
     long random;
     while (true){
-        random = abs(rand()% 30);
-        if (gcd(random, x) == 1){
+        random = abs(rand()% 50);
+        if (gcd(random, x) == 1 && random > 5){
             return random;
         }
     }
@@ -73,6 +78,7 @@ long RSA::generatePrime(){
     bool isPrime = true;
     while (true) {
         possiblyPrime = abs(rand()%1000);
+//        cout<<"Prime number: "<<possiblyPrime<<endl;
         for (int i = 2; i<possiblyPrime; i++){
             if (possiblyPrime % i == 0){
                 isPrime = false;

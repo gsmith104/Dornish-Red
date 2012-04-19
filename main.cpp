@@ -7,6 +7,7 @@
 //
 
 #include <iostream>
+#include "RsaHacker.h"
 #include <stdio.h>
 #include "RSA.h"
 #include "Server.h"
@@ -16,9 +17,10 @@ using namespace std;
 
 void *readit (void* arg) {
     ChatServer *server = (ChatServer *)arg;
-    char message[128];
+    char message[1028];
     while (server->getStillChatting()){
-        cin.getline(message,128);
+        cout<<server->getChatHandle()<<endl;
+        cin.getline(message,1028);
         server->sendMessage(server->getChatHandle());
         server->sendMessage(message);
     }   
@@ -38,12 +40,19 @@ int main (int argc, const char * argv[])
 
     char handle[20];
     strcpy(handle, argv[2]); 
-    cout<<handle<<endl;
+//    cout<<handle<<endl;
     ChatServer *server = new ChatServer(atoi(argv[1]), handle);
     if (server->recievePublicKey() && server->recieveC()){
         server->sendPublicKey();
         server->sendC();
     }
+    
+    RsaHacker *hacker = new RsaHacker(server->getClientKey(), server->getClientC());
+    long*keys = hacker->getAdversaryKey();
+    long privateKey = keys[0];
+    cout<<"My public key is: "<<server->getRSA()->getPublicKey()<<endl;
+    cout<<"My private key is: "<<server->getRSA()->getPrivateKey()<<endl;
+    cout<<"The adversary's private key is: "<<privateKey<<endl;
     
     pthread_t reader, writer;
     pthread_create(&reader, NULL, readit, server);
@@ -55,6 +64,7 @@ int main (int argc, const char * argv[])
 
     server->closeConnection();
     delete server;
+    delete hacker;
     return 0;
 }
 

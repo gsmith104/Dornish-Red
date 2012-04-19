@@ -65,10 +65,10 @@ bool ChatServer::sendMessage(char * message){
     }
     
     for (int i = 0; i<strlen(message); i++){
-//        long character = coder->endecrypt((long)message[i], clientKey, clientC);
-        char character = message[i];
-        bytesWritten = write(connfd, &character, sizeof(char));
-        if (bytesWritten < sizeof(char)){
+        long character = coder->endecrypt((long)message[i], clientKey, clientC);
+//        char character = message[i];
+        bytesWritten = write(connfd, &character, sizeof(long));
+        if (bytesWritten < sizeof(long)){
             return false;
         }
     }
@@ -85,12 +85,12 @@ bool ChatServer::readMessage(){
     
     char message[length + 1];
     for (int i = 0; i<length; i++) {
-        char character;
-        int n  = read(connfd, &character, sizeof(char));
-        if (n < sizeof(char)){
+        long character;
+        int n  = read(connfd, &character, sizeof(long));
+        if (n < sizeof(long)){
             return false;
         }
-//        character = coder->endecrypt(character, coder->getPrivateKey(), coder->getC());
+        character = coder->endecrypt(character, coder->getPrivateKey(), coder->getC());
         message[i] = character;
     }
     message[length] = '\0';
@@ -119,3 +119,17 @@ char* ChatServer::getChatHandle(){
 ChatServer::~ChatServer(){
     delete coder;
 }
+
+long ChatServer::getClientC(){
+    return clientC;
+}
+
+long ChatServer::getClientKey(){
+    return clientKey;
+}
+
+RSA* ChatServer::getRSA(){
+    return coder;
+}
+
+

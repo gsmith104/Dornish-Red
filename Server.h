@@ -34,6 +34,9 @@ public:
     bool closeConnection();
     bool getStillChatting();
     char* getChatHandle();
+    long getClientKey();
+    long getClientC();
+    RSA* getRSA();
 
 };
 
