@@ -25,16 +25,25 @@ ChatServer::ChatServer(int port, char* chatName){
     stillChatting = true;
 }
 
+/**
+ * Opens a connection on a specific port
+ */
 void ChatServer::createConnection(int portNum){
     srvfd = makeListener(portNum);
 }
 
+/**
+ * Sends the C value of the RSA object to the client
+ */
 bool ChatServer::sendC(){
     long c = coder->getC();
     write(connfd, &c, sizeof(long));
     return true;
 }
 
+/**
+ * Sends the public key value of the RSA object to the client
+ */
 bool ChatServer::sendPublicKey(){
     long key = coder->getPublicKey();
     write(connfd, &key, sizeof(long));
@@ -42,17 +51,26 @@ bool ChatServer::sendPublicKey(){
     
 }
 
+/**
+ * Recieveds the clients public key
+ */
 bool ChatServer::recievePublicKey(){
     read(connfd, &clientKey, sizeof(long));
     return true;
 }
 
+/**
+ * Recieveds the clients C value
+ */
 bool ChatServer::recieveC(){
     read(connfd, &clientC, sizeof(long));
     return true;
 
 }
 
+/**
+ * Sends a message to the client through RSA encryption.  Converts characters to long values that are the encrypted
+ */
 bool ChatServer::sendMessage(char * message){
     if (strcmp(message, "yield")==0){
         stillChatting = false;
@@ -76,6 +94,9 @@ bool ChatServer::sendMessage(char * message){
     return true;
 }
 
+/**
+ * Recieves a message from the client as a number of long values.  Decrypts the values and builds them into a char[].
+ */
 bool ChatServer::readMessage(){
     int length = 0;
     int bytesRead = read(connfd, &length, sizeof(int));
@@ -103,6 +124,9 @@ bool ChatServer::readMessage(){
     return true;
 }
 
+/**
+ * Closes the connection with the port and client
+ */
 bool ChatServer::closeConnection(){
     close(connfd);
     close(srvfd);

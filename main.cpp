@@ -9,12 +9,15 @@
 #include <iostream>
 #include "RsaHacker.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include "RSA.h"
 #include "Server.h"
 #include <string.h>
 using namespace std;
 
-
+/**
+ * Reads a message from the client
+ */
 void *readit (void* arg) {
     ChatServer *server = (ChatServer *)arg;
     char message[1028];
@@ -26,6 +29,9 @@ void *readit (void* arg) {
     }   
 }
 
+/**
+ * Writes a message to the client
+ */
 void *writeit (void *arg) {
     ChatServer *server = (ChatServer *)arg;
     while(server->getStillChatting()){

@@ -88,6 +88,9 @@ long RSA::generatePrime(){
                 isPrime = true;
             }
         }
+        if (possiblyPrime < 100){
+            continue;
+        }
         if (isPrime){
             return possiblyPrime;
         }
@@ -184,7 +187,7 @@ long RSA::getPrivateKey(){
 }
 
 /**
- *
+ * Reads in a number and returns it in binary
  */
 int RSA::toBase2(long n){
     int i = 0;
