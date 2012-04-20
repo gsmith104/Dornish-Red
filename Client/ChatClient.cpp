@@ -1,7 +1,7 @@
 /*
  * ChatClient.cpp
  *
- *  Created on: Apr 6, 2012
+ *  Created on: Apr 20, 2012
  *      Author: cmilner
  */
 
@@ -10,7 +10,11 @@ using namespace std;
 #include "mysocket.h"
 #include <iostream>
 
-
+/**
+ * Create a chat client who is connect to server specified by host and port.
+ * The handle will be used as an identifier in communications. An RSA
+ * encryption object will also be generated.
+ */
 ChatClient::ChatClient(char * host, int port, char * userHandle) {
     server = connectTo(host, port);
     encoder = new RSA();
@@ -18,6 +22,9 @@ ChatClient::ChatClient(char * host, int port, char * userHandle) {
     handle = userHandle;
 }
 
+/**
+ * Send public key to server.
+ */
 bool ChatClient::sendPublicKey() {
 	long e = encoder->getPublicKey();
 	int bytesWritten = write(server, &e, sizeof(long));
@@ -29,6 +36,9 @@ bool ChatClient::sendPublicKey() {
 	return true;
 }
 
+/**
+ * Receive servers public key.
+ */
 bool ChatClient::receiveServerKey() {
 	int bytesRead = read(server, &serverKey[0], sizeof(long));
 	bytesRead += read(server, &serverKey[1], sizeof(long));
@@ -38,6 +48,9 @@ bool ChatClient::receiveServerKey() {
 	return true;
 }
 
+/**
+ * Send message to server.
+ */
 bool ChatClient::sendMessage(char * msg) {
 	if (strcmp(msg, "yield") == 0) {
 		chatting = false;
@@ -63,12 +76,17 @@ bool ChatClient::sendMessage(char * msg) {
 	return true;
 }
 
+/**
+ * Receive a message from the server
+ */
 bool ChatClient::receiveMessage() {
 	int length = 0;
+        
+        //read the length of the message
 	int bytesRead = read(server, &length, sizeof(int));
 	if (bytesRead < sizeof(int)) {
 	    return false;
-    }
+        }
 
 	char msg[length+1];
 
@@ -89,13 +107,24 @@ bool ChatClient::receiveMessage() {
 		chatting = false;
 		sendMessage("yield");
 	}
-
 	cout<<msg<<endl;
 	return true;
 }
 
 bool ChatClient::isChatting() {
 	return chatting;
+}
+
+long ChatClient::getPrivateKey() {
+	return encoder->getPrivateKey();
+}
+
+long * ChatClient::getServerKey() {
+        return serverKey;
+}
+
+long ChatClient::getPublicKey() {
+	return encoder->getPublicKey();
 }
 
 char * ChatClient::getHandle() {

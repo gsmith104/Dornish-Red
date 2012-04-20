@@ -1,7 +1,7 @@
 /*
  * ChatClient.h
  *
- *  Created on: Apr 6, 2012
+ *  Created on: Apr 20, 2012
  *      Author: cmilner
  */
 
@@ -24,6 +24,9 @@ public:
 	bool sendMessage(char *);
 	bool receiveMessage();
 	bool isChatting();
+        long * getServerKey();
+        long getPrivateKey();
+        long getPublicKey();
 	char * getHandle();
 	virtual ~ChatClient();
 };

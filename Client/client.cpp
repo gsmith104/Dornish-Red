@@ -6,6 +6,7 @@
  */
 
 #include "ChatClient.h"
+#include "RsaHacker.h"
 #include <pthread.h>
 #include <iostream>
 #include <cstdlib>
@@ -43,11 +44,20 @@ int main (int argc, char * argv[]) {
     		break;
     	}
     }
-	ChatClient * client = new ChatClient(host, port, name);
+    ChatClient * client = new ChatClient(host, port, name);
 
     //exchange keys
     bool success = client->sendPublicKey();
     success = client->receiveServerKey();
+    cout<<"My public key: "<<client->getPublicKey()<<endl;
+    cout<<"Adversary Public Key: "<<client->getServerKey()[0]<<endl;
+
+    RsaHacker * hack = 
+         new RsaHacker(client->getServerKey()[0], client->getServerKey()[1]);
+    long adversaryKey = (hack->getAdversaryKey())[0];
+    cout<<"My private key: "<<client->getPrivateKey()<<endl;
+    cout<<"Adversary private Key: "<<adversaryKey<<endl;
+    
 
     pthread_t writer;
     pthread_t reader;
@@ -60,6 +70,7 @@ int main (int argc, char * argv[]) {
 
     delete client;
     delete name;
+    delete hack;
 
     return 0;
 }
@@ -75,7 +86,7 @@ void * reply(void * args) {
 	ChatClient * client = (ChatClient *) args;
 	while (client->isChatting()){
 		char message[1024];
-		cout<< client->getHandle() << ": ";
+		cout<< client->getHandle() << ":\n";
 		cin.getline(message, 1024);
 		client->sendMessage(client->getHandle());
 		client->sendMessage(message);
