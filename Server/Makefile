@@ -4,7 +4,7 @@ run:	build
 	./dornish 12345 Ned:
 
 build:
-	g++ -o dornish main.cpp RSA.cpp Server.cpp
+	g++ -pthread -o dornish main.cpp RSA.cpp Server.cpp RsaHacker.cpp
 
 clean:
 	rm dornish
